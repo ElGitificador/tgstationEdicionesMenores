@@ -486,6 +486,7 @@
 	quality = POSITIVE //not that cloning will be an option a lot but generally lets keep this around i guess?
 	text_gain_indication = span_warning("You get an intense feeling of heartburn.")
 	text_lose_indication = span_notice("Your internal organs feel at ease.")
+	power_coeff = 1
 
 /datum/mutation/martyrdom/on_acquiring()
 	. = ..()
@@ -509,22 +510,42 @@
 	for(var/obj/item/organ/I in organs)
 		qdel(I)
 
-	explosion(owner, light_impact_range = 2, adminlog = TRUE, explosion_cause = src)
-	for(var/mob/living/carbon/human/splashed in view(2, owner))
-		var/obj/item/organ/eyes/eyes = splashed.get_organ_slot(ORGAN_SLOT_EYES)
-		if(eyes)
-			to_chat(splashed, span_userdanger("You are blinded by a shower of blood!"))
-			eyes.apply_organ_damage(5)
-		else
-			to_chat(splashed, span_userdanger("You are knocked down by a wave of... blood?!"))
-		splashed.Stun(2 SECONDS)
-		splashed.set_eye_blur_if_lower(40 SECONDS)
-		splashed.adjust_confusion(3 SECONDS)
-	for(var/mob/living/silicon/borgo in view(2, owner))
-		to_chat(borgo, span_userdanger("Your sensors are disabled by a shower of blood!"))
-		borgo.Paralyze(6 SECONDS)
-	owner.investigate_log("has been gibbed by the martyrdom mutation.", INVESTIGATE_DEATHS)
-	owner.gib(DROP_ALL_REMAINS)
+	if(GET_MUTATION_POWER(src) > 1)
+			explosion(owner, devastation_range = 1, heavy_impact_range = 1, light_impact_range = 2, adminlog = TRUE, explosion_cause = src)
+			for(var/mob/living/carbon/human/splashed in view(3, owner))
+			var/obj/item/organ/eyes/eyes = splashed.get_organ_slot(ORGAN_SLOT_EYES)
+			if(eyes)
+				to_chat(splashed, span_userdanger("You are blinded by a shower of blood!"))
+				eyes.apply_organ_damage(7)
+			else
+				to_chat(splashed, span_userdanger("You are knocked down by a wave of... blood?!"))
+			splashed.Stun(3 SECONDS)
+			splashed.set_eye_blur_if_lower(60 SECONDS)
+			splashed.adjust_confusion(4.5 SECONDS)
+		for(var/mob/living/silicon/borgo in view(3, owner))
+			to_chat(borgo, span_userdanger("Your sensors are disabled by a shower of blood!"))
+			borgo.Paralyze(8 SECONDS)
+		owner.investigate_log("has been gibbed by the martyrdom mutation VIOLENTLY!", INVESTIGATE_DEATHS)
+		owner.gib(DROP_ALL_REMAINS)
+
+	else
+
+		explosion(owner, light_impact_range = 2, adminlog = TRUE, explosion_cause = src)
+		for(var/mob/living/carbon/human/splashed in view(2, owner))
+			var/obj/item/organ/eyes/eyes = splashed.get_organ_slot(ORGAN_SLOT_EYES)
+			if(eyes)
+				to_chat(splashed, span_userdanger("You are blinded by a shower of blood!"))
+				eyes.apply_organ_damage(5)
+			else
+				to_chat(splashed, span_userdanger("You are knocked down by a wave of... blood?!"))
+			splashed.Stun(2 SECONDS)
+			splashed.set_eye_blur_if_lower(40 SECONDS)
+			splashed.adjust_confusion(3 SECONDS)
+		for(var/mob/living/silicon/borgo in view(2, owner))
+			to_chat(borgo, span_userdanger("Your sensors are disabled by a shower of blood!"))
+			borgo.Paralyze(6 SECONDS)
+		owner.investigate_log("has been gibbed by the martyrdom mutation.", INVESTIGATE_DEATHS)
+		owner.gib(DROP_ALL_REMAINS)
 
 /datum/mutation/headless
 	name = "H.A.R.S."
